@@ -1,0 +1,111 @@
+ Program
+   Init Variables
+   BeforeStart
+     'First_point_≔p[0.10705,0.15735,0.05121,0.028,3.109,0.517]'
+     'Var_point≔pose_add(First_point_, p[0,0.03289,0.01197,0,0,0])'
+     Set DO[0]=Off
+     Set DO[1]=Off
+     pose1≔pose_add(Point_1_const, p[0.01197,0,0.03289,0,0,0])
+     pose2≔pose_add(Point_2_const, p[0.01197,0,0.03289,0,0,0])
+     pose3≔pose_add(Point_3_const, p[0.01197,0,0.03289,0,0,0])
+     pose4≔pose_add(Point_4_const, p[0.01197,0,0.03289,0,0,0])
+     pose5≔pose_add(Point_5_const, p[0.01197,0,0.03289,0,0,0])
+     pose6≔pose_add(Point_6_const, p[0.01197,0,0.03289,0,0,0])
+     pose7≔pose_add(Point_7_const, p[0.01197,0,0.03289,0,0,0])
+     pose8≔pose_add(Point_8_const, p[0.01197,0,0.03289,0,0,0])
+     pose9≔pose_add(Point_9_const, p[0.01197,0,0.03289,0,0,0])
+     poses≔[pose1,pose2,pose3,pose4,pose5,pose6,pose7,pose8,pose9]
+     pose10≔pose_add(Point_10_const, p[0.01197,0,0.03289,0,0,0])
+     pose11≔pose_add(Point_11_const, p[0.01197,0,0.03289,0,0,0])
+     pose12≔pose_add(Point_12_const, p[0.01197,0,0.03289,0,0,0])
+     pose13≔pose_add(Point_13_const, p[0.01197,0,0.03289,0,0,0])
+     pose14≔pose_add(Point_14_const, p[0.01197,0,0.03289,0,0,0])
+     pose15≔pose_add(Point_15_const, p[0.01197,0,0.03289,0,0,0])
+     pose16≔pose_add(Point_16_const, p[0.01197,0,0.03289,0,0,0])
+     pose17≔pose_add(Point_17_const, p[0.01197,0,0.03289,0,0,0])
+     pose18≔pose_add(Point_18_const, p[0.01197,0,0.03289,0,0,0])
+     poses2≔[pose10,pose11,pose12,pose13,pose14,pose15,pose16,pose17,pose18]
+     Var_point≔pose10
+     MoveJ
+       Pick_home
+   Robot Program
+     Loop i≤Rack_number
+       Loop j≤Row_number
+         Assign point
+           If i==1
+             Var_point≔poses[j-1]
+           ElseIf i==2
+             Var_point≔poses2[j-1]
+         Loop Row_full== True 
+           Pick & place sequence
+             MoveL
+               Var_point
+             Wait: 0.25
+             Check sensor
+               If ir_value== True 
+                 Row_full≔ True 
+               Else
+                 Row_full≔ False 
+             If Row_full== True 
+               MoveL
+                 Direction: Tool Y-
+                   Until (distance)
+                 Set DO[0]=On
+                 Set
+                 Wait: 0.25
+                 Direction: Tool Y+
+                   Until (distance)
+                 Set DO[1]=On
+                 Direction: Tool Y+
+                   Until (distance)
+                 Wait: 0.25
+                 Direction: Tool Z-
+                   Until (distance)
+               If 4<j
+                 MoveL
+                   Pick_home
+               MoveJ
+                 Fill_home
+                 Fill_aproach
+                 'Set DO[1]=Off'
+                 Wait: 1.0
+               MoveL
+                 Direction: Base Z-
+                   Until (distance)
+                   Until (expression)
+               MoveL
+                 Direction: Base Z+
+                   Until (distance)
+                 Set DO[1]=Off
+                 Wait: 0.5
+                 Set DO[0]=Off
+                 Set
+               MoveL
+                 Filling_aproach
+               MoveJ
+                 Fill_home
+               MoveJ
+                 Pick_home
+             Else
+               MoveL
+                 Direction: Tool Z-
+                   Until (distance)
+                 Direction: Tool X-
+                   Until (distance)
+         'Var_point≔pose_trans(Var_point, p[-Row_dist,0,0,0,0,0])'
+         j≔j+1
+         Row_full≔ True 
+       j≔1
+       MoveL
+         Pick_home
+       'Var_point≔pose_add(First_point_, p[0,Rack_distY*i,0,0,0,0])'
+       i≔i+1
+     Halt
+   Thread_1
+     Wait: 0.01
+     tcpforces≔get_tcp_force()
+     torqueY≔tcpforces[4]
+     torqueX≔tcpforces[3]
+   Thread_2
+     Wait: 0.01
+     ir_value≔digital_in[1]
